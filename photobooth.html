@@ -887,6 +887,47 @@
     </script>
 
     <a href="legal.html">Legal Policies</a>
+    <label for="billingName">Billing Name:</label>
+<input type="text" id="billingName" placeholder="Enter your name" required>
+<br><br>
+<button id="payButton">Pay Now</button>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById("payButton").addEventListener("click", function () {
+        var billingName = document.getElementById("billingName").value; // Get billing name from input
+
+        if (!billingName) {
+            alert("Please enter your billing name before proceeding.");
+            return;
+        }
+
+        var options = {
+            "key": "YOUR_RAZORPAY_KEY", // Replace with your Razorpay Key ID
+            "amount": 50000, // Example: 50000 paise = ₹500
+            "currency": "INR",
+            "name": "Your Business Name",
+            "description": "Payment for Order #12345",
+            "image": "https://yourwebsite.com/logo.png", // Optional: Your business logo
+            "order_id": "ORDER_ID_FROM_SERVER", // Replace with actual order ID if using backend
+            "prefill": {
+                "name": billingName,  // Pass the billing name here
+                "email": "johndoe@example.com",
+                "contact": "9999999999"
+            },
+            "theme": {
+                "color": "#3399cc"
+            },
+            "handler": function (response) {
+                alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+            }
+        };
+
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    });
+</script>
+
 
 </body>
 </html>
