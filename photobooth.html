@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,929 +6,601 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instant Polaroid Photobooth</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f0f0f0;
             display: flex;
+            flex-direction: column;
+            min-height: 100vh;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            text-align: center;
         }
         
         .container {
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            padding: 40px 20px;
             background-color: white;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            padding: 30px;
-            max-width: 600px;
-            width: 90%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
         h1 {
             color: #333;
             margin-bottom: 20px;
+            font-size: 36px;
         }
         
-        .section {
-            display: none;
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 30px;
         }
         
-        .section.active {
-            display: block;
-            animation: fadeIn 0.5s;
+        .description {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .price {
+            font-size: 18px;
+            margin: 20px 0;
+            color: #333;
         }
         
-        button {
+        .btn {
+            padding: 12px 24px;
             background-color: #ff6b6b;
             color: white;
             border: none;
-            padding: 12px 24px;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
-            margin: 10px;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
         }
         
-        button:hover {
+        .btn:hover {
             background-color: #ff5252;
+            transform: scale(1.05);
         }
         
-        .qr-code {
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .qr-code img {
-            max-width: 100%;
-            max-height: 100%;
-        }
-        
-        .timer {
-            font-size: 72px;
-            font-weight: bold;
-            color: #ff6b6b;
-            margin: 20px 0;
-        }
-        
-        .photo-preview {
+        .screen {
+            display: none;
             width: 100%;
-            height: 300px;
-            background-color: #333;
-            margin: 20px 0;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .photo-area {
+            margin: 20px auto;
+            width: 320px;
+            height: 240px;
+            background-color: #ddd;
+            border: 3px solid #333;
             position: relative;
             overflow: hidden;
         }
         
-        .taken-photos {
+        .timer {
+            font-size: 48px;
+            color: red;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        .photo-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photos-container {
             display: flex;
-            justify-content: center;
             flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
             margin: 20px 0;
         }
         
-        .thumbnail {
+        .photo-thumbnail {
             width: 120px;
-            height: 120px;
-            background-color: #555;
-            margin: 5px;
-            background-size: cover;
-            background-position: center;
+            height: 90px;
+            border: 2px solid #333;
+            object-fit: cover;
         }
         
         .shape-options {
             display: flex;
             justify-content: center;
+            gap: 20px;
             margin: 20px 0;
         }
         
         .shape-option {
-            width: 100px;
-            height: 130px;
-            margin: 0 10px;
-            border: 2px solid #ddd;
             cursor: pointer;
-            transition: border-color 0.3s;
+            border: 2px solid transparent;
+            padding: 5px;
+            transition: all 0.3s;
         }
         
         .shape-option.selected {
             border-color: #ff6b6b;
         }
         
-        .classic {
-            border-radius: 5px;
-            background-color: white;
+        .shape-option img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
         }
         
-        .rounded {
-            border-radius: 15px;
-            background-color: white;
-        }
-        
-        .heart {
-            background-color: white;
-            position: relative;
-            transform: scale(0.8);
-        }
-        
-        .heart:before, .heart:after {
-            content: "";
-            position: absolute;
-            width: 50px;
-            height: 80px;
-            background-color: white;
-            border-radius: 50px 50px 0 0;
-        }
-        
-        .heart:before {
-            left: 50px;
-            transform: rotate(-45deg);
-            transform-origin: 0 100%;
-            border: 2px solid #ddd;
-            border-right: none;
-            border-bottom: none;
-        }
-        
-        .heart:after {
-            left: 0;
-            transform: rotate(45deg);
-            transform-origin: 100% 100%;
-            border: 2px solid #ddd;
-            border-left: none;
-            border-bottom: none;
-        }
-        
-        .progress-container {
-            width: 100%;
-            height: 10px;
-            background-color: #f0f0f0;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background-color: #ff6b6b;
-            border-radius: 5px;
-            width: 0%;
-            transition: width 0.5s;
-        }
-        
-        #video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        #canvas {
+        .modal {
             display: none;
-        }
-        
-        /* Payment method styles */
-        .payment-methods {
-            display: flex;
-            flex-direction: column;
-            margin: 20px 0;
-            gap: 15px;
-        }
-        
-        .payment-method {
-            display: flex;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            cursor: pointer;
-            transition: border-color 0.3s;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
             align-items: center;
         }
         
-        .payment-method:hover {
-            border-color: #ff6b6b;
-        }
-        
-        .payment-method.selected {
-            border-color: #ff6b6b;
-            background-color: rgba(255, 107, 107, 0.1);
-        }
-        
-        .payment-method-icon {
-            width: 50px;
-            height: 30px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            margin-right: 15px;
-        }
-        
-        .card-input {
+        .modal.active {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
         }
         
-        .card-input input {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        .card-row {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .card-row input {
-            flex: 1;
-        }
-        
-        .error-message {
-            color: #ff3333;
-            margin-top: 5px;
-            font-size: 14px;
-            display: none;
-        }
-        
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            
-            .print-only, .print-only * {
-                visibility: visible;
-            }
-            
-            .print-only {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-        }
-        
-        .print-preview {
-            display: none;
-        }
-        
-        .print-only {
+        .modal-content {
+            background-color: white;
             padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .close-modal {
+            cursor: pointer;
+            font-size: 24px;
+        }
+        
+        .legal-section {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .legal-section h3 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+        
+        .camera-flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            opacity: 0;
+            z-index: 5;
+        }
+        
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        .printing {
+            margin: 20px 0;
+            font-size: 20px;
+            color: #333;
+        }
+        
+        .loading-dots:after {
+            content: '.';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
+        }
+        
+        .legal-link {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: #5a5aff;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="welcome" class="section active">
+        <div id="welcomeScreen" class="screen active">
             <h1>Instant Polaroid Photobooth</h1>
-            <p>Capture your special moments and get instant polaroid prints!</p>
-            <p>Perfect for couples, families, friends, and everyone!</p>
-            <button id="get-started">GET STARTED</button>
+            <p class="description">Capture your special moments and get instant polaroid prints!</p>
+            <p class="description">Perfect for couples, families, friends, and everyone!</p>
+            <button id="getStartedBtn" class="btn">GET STARTED</button>
         </div>
         
-        <div id="payment" class="section">
-            <h1>Select Payment Method</h1>
-            <p>Choose how you would like to pay</p>
-            <p>Price: $5.00 for 4 photos</p>
-            
-            <div class="payment-methods">
-                <div class="payment-method" data-method="card">
-                    <div class="payment-method-icon" style="background-image: url('/api/placeholder/50/30');"></div>
-                    <div>Credit/Debit Card</div>
-                </div>
-                <div class="payment-method" data-method="qrcode">
-                    <div class="payment-method-icon" style="background-image: url('/api/placeholder/50/30');"></div>
-                    <div>Scan QR Code</div>
-                </div>
-            </div>
-            
-            <div id="card-payment-form" style="display: none;">
-                <div class="card-input">
-                    <input type="text" id="card-number" placeholder="Card Number" maxlength="19">
-                    <div class="error-message" id="card-number-error">Please enter a valid card number</div>
-                    
-                    <input type="text" id="card-name" placeholder="Cardholder Name">
-                    <div class="error-message" id="card-name-error">Please enter cardholder name</div>
-                    
-                    <div class="card-row">
-                        <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5">
-                        <input type="password" id="cvv" placeholder="CVV" maxlength="4">
-                    </div>
-                    <div class="error-message" id="expiry-error">Please enter a valid expiration date</div>
-                    <div class="error-message" id="cvv-error">Please enter a valid CVV</div>
-                </div>
-                <button id="process-card-payment">Process Payment</button>
-            </div>
-            
-            <div id="qr-payment" style="display: none;">
-                <div class="qr-code">
-                    <img src="qr-code.jpg" alt="Payment QR Code" onerror="this.src='/api/placeholder/200/200'; this.onerror=null;">
-                </div>
-                <p>Scan with your mobile payment app</p>
-                <button id="verify-qr-payment">I've Completed Payment</button>
-            </div>
-            
-            <div id="payment-processing" style="display: none;">
-                <div class="progress-container">
-                    <div class="progress-bar" id="payment-progress"></div>
-                </div>
-                <p id="payment-status">Processing payment...</p>
-            </div>
-            
-            <button id="simulate-payment" style="display: none;">Simulate Payment (For Demo)</button>
+        <div id="paymentScreen" class="screen">
+            <h2>Select Payment Method</h2>
+            <p class="description">Choose how you would like to pay</p>
+            <p class="price">Price: ₹199 for 4 photos</p>
+            <div id="razorpay-payment-button"></div>
         </div>
         
-        <div id="camera-setup" class="section">
-            <h1>Get Ready!</h1>
-            <p>Your photoshoot will begin shortly.</p>
-            <p>Please position yourself in front of the camera.</p>
-            <div class="photo-preview">
-                <video id="video" autoplay></video>
+        <div id="photoScreen" class="screen">
+            <h1>Smile for the Camera!</h1>
+            <div class="photo-area">
+                <div id="timer" class="timer"></div>
+                <div id="cameraFlash" class="camera-flash"></div>
+                <video id="videoElement" class="photo-preview" autoplay></video>
+                <canvas id="photoCanvas" style="display: none;"></canvas>
             </div>
-            <canvas id="canvas"></canvas>
-            <button id="ready-btn">I'M READY</button>
+            <p>Photos remaining: <span id="photosRemaining">4</span></p>
+            <div id="photosContainer" class="photos-container"></div>
         </div>
         
-        <div id="photo-timer" class="section">
-            <h1>Smile!</h1>
-            <div class="photo-preview">
-                <video id="timer-video" autoplay></video>
-            </div>
-            <div class="timer" id="countdown">15</div>
-            <p>Photo <span id="photo-count">1</span> of 4</p>
-        </div>
-        
-        <div id="photos-review" class="section">
-            <h1>Your Photos</h1>
-            <p>Here are your 4 beautiful shots!</p>
-            <div class="taken-photos" id="photo-thumbnails"></div>
-        </div>
-        
-        <div id="shape-selection" class="section">
-            <h1>Choose Your Polaroid Style</h1>
-            <p>Select the shape you'd like for your prints</p>
+        <div id="shapeScreen" class="screen">
+            <h1>Choose Your Polaroid Shape</h1>
             <div class="shape-options">
-                <div class="shape-option classic selected" data-shape="classic">
+                <div class="shape-option" data-shape="classic">
+                    <img src="/api/placeholder/100/100" alt="Classic Polaroid">
                     <p>Classic</p>
                 </div>
-                <div class="shape-option rounded" data-shape="rounded">
-                    <p>Rounded</p>
-                </div>
-                <div class="shape-option heart" data-shape="heart">
+                <div class="shape-option" data-shape="heart">
+                    <img src="/api/placeholder/100/100" alt="Heart Polaroid">
                     <p>Heart</p>
                 </div>
+                <div class="shape-option" data-shape="star">
+                    <img src="/api/placeholder/100/100" alt="Star Polaroid">
+                    <p>Star</p>
+                </div>
             </div>
-            <button id="confirm-shape">CONFIRM SELECTION</button>
+            <button id="confirmShapeBtn" class="btn" disabled>Confirm Selection</button>
         </div>
         
-        <div id="printing" class="section">
+        <div id="printingScreen" class="screen">
             <h1>Printing Your Photos</h1>
-            <p>Please wait while we print your polaroids...</p>
-            <div class="progress-container">
-                <div class="progress-bar" id="print-progress"></div>
+            <div class="printing">
+                Please wait while we print your polaroid<span class="loading-dots"></span>
             </div>
-            <p id="print-status">Preparing to print...</p>
+            <div id="finalPhotosContainer" class="photos-container"></div>
         </div>
         
-        <div id="complete" class="section">
-            <h1>All Done!</h1>
-            <p>Your polaroids have been printed!</p>
-            <p>Don't forget to pick them up from the tray.</p>
-            <p>Thank you for using our Photobooth!</p>
-            <button id="start-over">START OVER</button>
-        </div>
-        
-        <div id="print-area" class="print-only">
-            <div id="polaroid-prints"></div>
+        <div id="completeScreen" class="screen">
+            <h1>Thank You!</h1>
+            <p class="description">Your polaroid is ready. Please collect it from the tray.</p>
+            <p class="description">We hope you enjoyed the experience!</p>
+            <button id="startOverBtn" class="btn">Start Over</button>
         </div>
     </div>
-
+    
+    <a href="#" id="legalPoliciesLink" class="legal-link">Legal Policies</a>
+    
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Terms & Conditions</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            
+            <div class="legal-section">
+                <h3>📞 Contact Us</h3>
+                <p>📍 Address: #212, 4th Main, Panduranga Nagar, Bannerghatta Road, Bangalore – 560076</p>
+                <p>📧 Email: welcometophotobooth@gmail.com</p>
+                <p>📞 Phone: 9741783313</p>
+            </div>
+            
+            <div class="legal-section">
+                <h3>📜 Terms & Conditions</h3>
+                <p>Welcome to Welcome to Photobooth! By using our services, you agree to the following terms:</p>
+                <p>Our services are provided "as is" without warranties of any kind.</p>
+                <p>Once a payment is made, it is non-refundable and cannot be canceled.</p>
+                <p>We are not responsible for any third-party services or failures.</p>
+                <p>If you have any concerns, please contact us.</p>
+            </div>
+            
+            <div class="legal-section">
+                <h3>🔐 Privacy Policy</h3>
+                <p>At Welcome to Photobooth, we respect your privacy.</p>
+                <p>✅ We do not collect personal data from users.</p>
+                <p>✅ We do not use third-party tracking or analytics.</p>
+                <p>✅ We do not share any data with third parties.</p>
+                <p>If you have any privacy concerns, reach out to us at welcometophotobooth@gmail.com.</p>
+            </div>
+            
+            <div class="legal-section">
+                <h3>💰 Refund & Cancellation Policy</h3>
+                <p>❌ Cancellations are not allowed after payment is made.</p>
+                <p>❌ No refunds will be issued under any circumstances.</p>
+                <p>❌ Once the service is booked, it is final and non-refundable.</p>
+                <p>Please contact us for any further clarifications.</p>
+            </div>
+            
+            <div class="legal-section">
+                <h3>🚚 Shipping & Delivery Policy</h3>
+                <p>We do not offer shipping or delivery services.</p>
+                <p>No physical products are delivered.</p>
+                <p>For any questions, feel free to contact us! 😊</p>
+            </div>
+            
+            <button id="agreeBtn" class="btn">I Agree</button>
+        </div>
+    </div>
+    
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
-        // DOM Elements
-        const sections = {
-            welcome: document.getElementById('welcome'),
-            payment: document.getElementById('payment'),
-            cameraSetup: document.getElementById('camera-setup'),
-            photoTimer: document.getElementById('photo-timer'),
-            photosReview: document.getElementById('photos-review'),
-            shapeSelection: document.getElementById('shape-selection'),
-            printing: document.getElementById('printing'),
-            complete: document.getElementById('complete')
+        // Main application state
+        const appState = {
+            currentScreen: 'welcomeScreen',
+            photos: [],
+            selectedShape: null,
+            photosRemaining: 4,
+            paymentComplete: false
         };
         
-        // Buttons
-        const getStartedBtn = document.getElementById('get-started');
-        const simulatePaymentBtn = document.getElementById('simulate-payment');
-        const readyBtn = document.getElementById('ready-btn');
-        const confirmShapeBtn = document.getElementById('confirm-shape');
-        const startOverBtn = document.getElementById('start-over');
-        
-        // Payment elements
-        const paymentMethods = document.querySelectorAll('.payment-method');
-        const cardPaymentForm = document.getElementById('card-payment-form');
-        const qrPayment = document.getElementById('qr-payment');
-        const processCardPaymentBtn = document.getElementById('process-card-payment');
-        const verifyQrPaymentBtn = document.getElementById('verify-qr-payment');
-        const paymentProcessing = document.getElementById('payment-processing');
-        const paymentProgress = document.getElementById('payment-progress');
-        const paymentStatus = document.getElementById('payment-status');
-        
-        // Card input elements
-        const cardNumber = document.getElementById('card-number');
-        const cardName = document.getElementById('card-name');
-        const expiryDate = document.getElementById('expiry-date');
-        const cvv = document.getElementById('cvv');
-        
-        // Error message elements
-        const cardNumberError = document.getElementById('card-number-error');
-        const cardNameError = document.getElementById('card-name-error');
-        const expiryError = document.getElementById('expiry-error');
-        const cvvError = document.getElementById('cvv-error');
-        
-        // Other elements
-        const countdown = document.getElementById('countdown');
-        const photoCount = document.getElementById('photo-count');
-        const thumbnails = document.getElementById('photo-thumbnails');
+        // DOM Elements
+        const screens = document.querySelectorAll('.screen');
+        const getStartedBtn = document.getElementById('getStartedBtn');
+        const termsModal = document.getElementById('termsModal');
+        const agreeBtn = document.getElementById('agreeBtn');
+        const closeModal = document.querySelector('.close-modal');
+        const videoElement = document.getElementById('videoElement');
+        const photoCanvas = document.getElementById('photoCanvas');
+        const timer = document.getElementById('timer');
+        const photosRemainingEl = document.getElementById('photosRemaining');
+        const photosContainer = document.getElementById('photosContainer');
         const shapeOptions = document.querySelectorAll('.shape-option');
-        const printProgress = document.getElementById('print-progress');
-        const printStatus = document.getElementById('print-status');
-        const polaroidPrints = document.getElementById('polaroid-prints');
+        const confirmShapeBtn = document.getElementById('confirmShapeBtn');
+        const finalPhotosContainer = document.getElementById('finalPhotosContainer');
+        const startOverBtn = document.getElementById('startOverBtn');
+        const cameraFlash = document.getElementById('cameraFlash');
+        const legalPoliciesLink = document.getElementById('legalPoliciesLink');
         
-        // Video elements
-        const video = document.getElementById('video');
-        const timerVideo = document.getElementById('timer-video');
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+        // Event Listeners
+        getStartedBtn.addEventListener('click', showTerms);
+        agreeBtn.addEventListener('click', startPaymentProcess);
+        closeModal.addEventListener('click', closeTermsModal);
+        confirmShapeBtn.addEventListener('click', startPrinting);
+        startOverBtn.addEventListener('click', resetApp);
+        legalPoliciesLink.addEventListener('click', showTerms);
         
-        // App state
-        let currentSection = 'welcome';
-        let photosTaken = [];
-        let currentPhotoIndex = 0;
-        let selectedShape = 'classic';
-        let selectedPaymentMethod = null;
-        let paymentVerified = false;
-        let stream = null;
+        shapeOptions.forEach(option => {
+            option.addEventListener('click', () => selectShape(option));
+        });
         
-        // Show a specific section
-        function showSection(sectionName) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
+        // Functions
+        function showScreen(screenId) {
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            appState.currentScreen = screenId;
+        }
+        
+        function showTerms(e) {
+            if (e) e.preventDefault();
+            termsModal.classList.add('active');
+        }
+        
+        function closeTermsModal() {
+            termsModal.classList.remove('active');
+        }
+        
+        function startPaymentProcess() {
+            closeTermsModal();
+            showScreen('paymentScreen');
+            
+            // Razorpay integration
+            const options = {
+                // Replace with your actual Razorpay key ID
+                key: "YOUR_RAZORPAY_KEY_ID",
+                amount: 19900, // Amount in smallest currency unit (paisa) - 199 INR
+                currency: "INR",
+                name: "Instant Polaroid Photobooth",
+                description: "4 Polaroid Photos",
+                // Replace with your order ID
+                order_id: "ORDER_ID_FROM_SERVER",
+                handler: function(response) {
+                    // Payment successful
+                    paymentSuccess();
+                },
+                theme: {
+                    color: "#ff6b6b"
+                }
+            };
+            
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', function(response) {
+                alert('Payment failed. Please try again.');
             });
             
-            sections[sectionName].classList.add('active');
-            currentSection = sectionName;
+            // Create a button for Razorpay
+            document.getElementById('razorpay-payment-button').innerHTML = '';
+            const payButton = document.createElement('button');
+            payButton.className = 'btn';
+            payButton.innerText = 'Pay Now';
+            payButton.addEventListener('click', function() {
+                rzp.open();
+            });
+            document.getElementById('razorpay-payment-button').appendChild(payButton);
+            
+            // For demonstration purposes, let's add a button to simulate payment success
+            const demoPayBtn = document.createElement('button');
+            demoPayBtn.className = 'btn';
+            demoPayBtn.style.backgroundColor = '#28a745';
+            demoPayBtn.style.marginLeft = '10px';
+            demoPayBtn.innerText = 'Demo: Simulate Payment';
+            demoPayBtn.addEventListener('click', paymentSuccess);
+            document.getElementById('razorpay-payment-button').appendChild(demoPayBtn);
         }
         
-        // Initialize camera
-        async function initCamera() {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-                timerVideo.srcObject = stream;
-                
-                // Set canvas size to match video dimensions
-                video.onloadedmetadata = () => {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                };
-            } catch (err) {
-                console.error('Error accessing camera:', err);
-                alert('Unable to access camera. Please ensure you have given permission.');
-            }
+        function paymentSuccess() {
+            appState.paymentComplete = true;
+            startPhotoSession();
         }
         
-        // Take a photo
-        function takePhoto() {
-            // Draw the current video frame to the canvas
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            // Get the image data
-            const imageData = canvas.toDataURL('image/jpeg');
-            photosTaken.push(imageData);
-            
-            // Create thumbnail
-            createThumbnail(imageData);
-            
-            currentPhotoIndex++;
-            
-            if (currentPhotoIndex < 4) {
-                // Start timer for next photo
-                photoCount.textContent = currentPhotoIndex + 1;
+        function startPhotoSession() {
+            showScreen('photoScreen');
+            initCamera();
+        }
+        
+        function initCamera() {
+            navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: false
+            })
+            .then(stream => {
+                videoElement.srcObject = stream;
                 startPhotoTimer();
-            } else {
-                // All photos taken, move to review
-                showSection('photosReview');
-            }
+            })
+            .catch(err => {
+                console.error('Camera error:', err);
+                alert('Could not access camera. Please check permissions.');
+            });
         }
         
-        // Create a thumbnail for the taken photo
-        function createThumbnail(imageData) {
-            const thumbnail = document.createElement('div');
-            thumbnail.className = 'thumbnail';
-            thumbnail.style.backgroundImage = `url(${imageData})`;
-            thumbnails.appendChild(thumbnail);
-        }
-        
-        // Start the photo timer
         function startPhotoTimer() {
-            let secondsLeft = 15;
-            countdown.textContent = secondsLeft;
+            let countdown = 15;
+            timer.textContent = countdown;
             
-            const timer = setInterval(() => {
-                secondsLeft--;
-                countdown.textContent = secondsLeft;
+            const timerInterval = setInterval(() => {
+                countdown--;
+                timer.textContent = countdown;
                 
-                if (secondsLeft <= 0) {
-                    clearInterval(timer);
+                if (countdown <= 0) {
+                    clearInterval(timerInterval);
                     takePhoto();
                 }
             }, 1000);
         }
         
-        // Create polaroid prints based on selected shape
-        function createPolaroidPrints() {
-            polaroidPrints.innerHTML = '';
+        function takePhoto() {
+            // Set up canvas
+            const canvas = photoCanvas;
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            const context = canvas.getContext('2d');
             
-            photosTaken.forEach((photo, index) => {
-                const polaroid = document.createElement('div');
-                polaroid.style.width = '300px';
-                polaroid.style.height = '350px';
-                polaroid.style.margin = '10px';
-                polaroid.style.padding = '15px';
-                polaroid.style.backgroundColor = 'white';
-                polaroid.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
-                
-                // Apply shape styling
-                if (selectedShape === 'classic') {
-                    polaroid.style.borderRadius = '5px';
-                } else if (selectedShape === 'rounded') {
-                    polaroid.style.borderRadius = '20px';
-                } else if (selectedShape === 'heart') {
-                    // Heart shape is complex for actual printing
-                    // This is a simplified representation
-                    polaroid.style.borderRadius = '20px 20px 5px 5px';
-                }
-                
-                const photoImg = document.createElement('img');
-                photoImg.src = photo;
-                photoImg.style.width = '100%';
-                photoImg.style.height = '80%';
-                photoImg.style.objectFit = 'cover';
-                
-                if (selectedShape === 'rounded') {
-                    photoImg.style.borderRadius = '15px';
-                }
-                
-                const caption = document.createElement('div');
-                caption.textContent = `Photobooth - ${new Date().toLocaleDateString()}`;
-                caption.style.marginTop = '10px';
-                caption.style.textAlign = 'center';
-                
-                polaroid.appendChild(photoImg);
-                polaroid.appendChild(caption);
-                polaroidPrints.appendChild(polaroid);
-            });
-        }
-        
-        // Simulate printing process
-        function simulatePrinting() {
-            createPolaroidPrints();
+            // Flash effect
+            cameraFlash.style.animation = 'flash 0.5s';
+            setTimeout(() => {
+                cameraFlash.style.animation = '';
+            }, 500);
             
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 5;
-                printProgress.style.width = `${progress}%`;
-                
-                if (progress <= 25) {
-                    printStatus.textContent = "Preparing photos...";
-                } else if (progress <= 50) {
-                    printStatus.textContent = "Applying effects...";
-                } else if (progress <= 75) {
-                    printStatus.textContent = "Printing...";
-                } else if (progress < 100) {
-                    printStatus.textContent = "Almost done...";
-                } else {
-                    clearInterval(interval);
-                    printStatus.textContent = "Printing complete!";
-                    
-                    // Simulate actual printing
-                    setTimeout(() => {
-                        window.print();
-                        showSection('complete');
-                    }, 1000);
-                }
-            }, 200);
-        }
-        
-        // Validate credit card number using Luhn algorithm
-        function isValidCardNumber(number) {
-            // Remove spaces and dashes
-            const cardNum = number.replace(/[\s-]/g, '');
+            // Capture photo
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
             
-            // Check if the input only contains digits
-            if (!/^\d+$/.test(cardNum)) return false;
+            // Get photo data
+            const photoData = canvas.toDataURL('image/jpeg');
+            appState.photos.push(photoData);
             
-            // Check length (most cards are 13-19 digits)
-            if (cardNum.length < 13 || cardNum.length > 19) return false;
+            // Update UI
+            const thumbnailContainer = document.createElement('div');
+            const thumbnail = document.createElement('img');
+            thumbnail.src = photoData;
+            thumbnail.className = 'photo-thumbnail';
+            thumbnailContainer.appendChild(thumbnail);
+            photosContainer.appendChild(thumbnailContainer);
             
-            // Luhn algorithm implementation
-            let sum = 0;
-            let doubleUp = false;
+            // Update photos remaining
+            appState.photosRemaining--;
+            photosRemainingEl.textContent = appState.photosRemaining;
             
-            for (let i = cardNum.length - 1; i >= 0; i--) {
-                let digit = parseInt(cardNum.charAt(i));
-                
-                if (doubleUp) {
-                    digit *= 2;
-                    if (digit > 9) digit -= 9;
-                }
-                
-                sum += digit;
-                doubleUp = !doubleUp;
-            }
-            
-            return sum % 10 === 0;
-        }
-        
-        // Validate expiry date
-        function isValidExpiryDate(expiry) {
-            // Check format (MM/YY)
-            if (!/^\d{2}\/\d{2}$/.test(expiry)) return false;
-            
-            const [month, year] = expiry.split('/').map(part => parseInt(part, 10));
-            const currentDate = new Date();
-            const currentYear = currentDate.getFullYear() % 100; // Get last two digits
-            const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
-            
-            // Check month validity
-            if (month < 1 || month > 12) return false;
-            
-            // Check if card is not expired
-            if (year < currentYear || (year === currentYear && month < currentMonth)) {
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // Validate CVV
-        function isValidCVV(cvvCode) {
-            // Most cards use 3-digit CVV, American Express uses 4-digit
-            return /^\d{3,4}$/.test(cvvCode);
-        }
-        
-        // Format card number with spaces
-        function formatCardNumber(input) {
-            const numberOnly = input.value.replace(/\D/g, '');
-            const groups = numberOnly.match(/.{1,4}/g);
-            if (groups) {
-                input.value = groups.join(' ');
-            } else {
-                input.value = numberOnly;
-            }
-        }
-        
-        // Format expiry date
-        function formatExpiryDate(input) {
-            const numberOnly = input.value.replace(/\D/g, '');
-            
-            if (numberOnly.length > 2) {
-                input.value = numberOnly.substring(0, 2) + '/' + numberOnly.substring(2, 4);
-            } else {
-                input.value = numberOnly;
-            }
-        }
-        
-        // Verify payment information
-        function verifyCardPayment() {
-            let isValid = true;
-            
-            // Reset error messages
-            cardNumberError.style.display = 'none';
-            cardNameError.style.display = 'none';
-            expiryError.style.display = 'none';
-            cvvError.style.display = 'none';
-            
-            // Validate card number
-            if (!isValidCardNumber(cardNumber.value)) {
-                cardNumberError.style.display = 'block';
-                isValid = false;
-            }
-            
-            // Validate cardholder name
-            if (cardName.value.trim() === '') {
-                cardNameError.style.display = 'block';
-                isValid = false;
-            }
-            
-            // Validate expiry date
-            if (!isValidExpiryDate(expiryDate.value)) {
-                expiryError.style.display = 'block';
-                isValid = false;
-            }
-            
-            // Validate CVV
-            if (!isValidCVV(cvv.value)) {
-                cvvError.style.display = 'block';
-                isValid = false;
-            }
-            
-            return isValid;
-        }
-        
-        // Process payment
-        function processPayment() {
-            cardPaymentForm.style.display = 'none';
-            qrPayment.style.display = 'none';
-            paymentProcessing.style.display = 'block';
-            
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 10;
-                paymentProgress.style.width = `${progress}%`;
-                
-                if (progress < 40) {
-                    paymentStatus.textContent = "Verifying payment details...";
-                } else if (progress < 70) {
-                    paymentStatus.textContent = "Processing transaction...";
-                } else if (progress < 100) {
-                    paymentStatus.textContent = "Finalizing payment...";
-                } else {
-                    clearInterval(interval);
-                    paymentStatus.textContent = "Payment successful!";
-                    paymentVerified = true;
-                    
-                    // Proceed to next step after payment
-                    setTimeout(() => {
-                        initCamera();
-                        showSection('cameraSetup');
-                    }, 1000);
-                }
-            }, 200);
-        }
-        
-        // Event Listeners
-        getStartedBtn.addEventListener('click', () => {
-            showSection('payment');
-        });
-        
-        simulatePaymentBtn.addEventListener('click', () => {
-            paymentVerified = true;
-            initCamera();
-            showSection('cameraSetup');
-        });
-        
-        // Select payment method
-        paymentMethods.forEach(method => {
-            method.addEventListener('click', () => {
-                paymentMethods.forEach(m => m.classList.remove('selected'));
-                method.classList.add('selected');
-                selectedPaymentMethod = method.dataset.method;
-                
-                if (selectedPaymentMethod === 'card') {
-                    cardPaymentForm.style.display = 'block';
-                    qrPayment.style.display = 'none';
-                } else if (selectedPaymentMethod === 'qrcode') {
-                    cardPaymentForm.style.display = 'none';
-                    qrPayment.style.display = 'block';
-                }
-                
-                // Show simulation button for demo purposes
-                simulatePaymentBtn.style.display = 'block';
-            });
-        });
-        
-        // Format card inputs
-        cardNumber.addEventListener('input', () => formatCardNumber(cardNumber));
-        expiryDate.addEventListener('input', () => formatExpiryDate(expiryDate));
-        
-        // Process card payment
-        processCardPaymentBtn.addEventListener('click', () => {
-            if (verifyCardPayment()) {
-                processPayment();
-            }
-        });
-        
-        // Verify QR code payment
-        verifyQrPaymentBtn.addEventListener('click', () => {
-            // In a real app, this would check with a server
-            // For demo, we simulate verification
-            processPayment();
-        });
-        
-        readyBtn.addEventListener('click', () => {
-            if (paymentVerified) {
-                showSection('photoTimer');
+            // Check if more photos need to be taken
+            if (appState.photosRemaining > 0) {
                 startPhotoTimer();
             } else {
-                alert('Payment verification required before proceeding.');
-                showSection('payment');
+                // All photos taken, move to shape selection
+                setTimeout(() => {
+                    stopCamera();
+                    showScreen('shapeScreen');
+                }, 1000);
             }
-        });
-        
-        shapeOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                shapeOptions.forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-                selectedShape = option.dataset.shape;
-            });
-        });
-        
-        confirmShapeBtn.addEventListener('click', () => {
-            showSection('printing');
-            simulatePrinting();
-        });
-        
-        startOverBtn.addEventListener('click', () => {
-            // Reset app state
-            photosTaken = [];
-            currentPhotoIndex = 0;
-            thumbnails.innerHTML = '';
-            paymentVerified = false;
-            
-            // Reset payment forms
-            cardNumber.value = '';
-            cardName.value = '';
-            expiryDate.value = '';
-            cvv.value = '';
-            
-            // Reset error messages
-            cardNumberError.style.display = 'none';
-            cardNameError.style.display = 'none';
-            expiryError.style.display = 'none';
-            cvvError.style.display = 'none';
-            
-            // Reset payment processing
-            paymentProgress.style.width = '0%';
-            
-            // Hide payment sections
-            cardPaymentForm.style.display = 'none';
-            qrPayment.style.display = 'none';
-            paymentProcessing.style.display = 'none';
-            
-            // Stop camera stream if active
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-            
-            showSection('welcome');
-        });
-    </script>
-
-    <a href="legal.html">Legal Policies</a>
-    <label for="billingName">Billing Name:</label>
-<input type="text" id="billingName" placeholder="Enter your name" required>
-<br><br>
-<button id="payButton">Pay Now</button>
-
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-    document.getElementById("payButton").addEventListener("click", function () {
-        var billingName = document.getElementById("billingName").value; // Get billing name from input
-
-        if (!billingName) {
-            alert("Please enter your billing name before proceeding.");
-            return;
         }
-
-        var options = {
-            "key": "YOUR_RAZORPAY_KEY", // Replace with your Razorpay Key ID
-            "amount": 50000, // Example: 50000 paise = ₹500
-            "currency": "INR",
-            "name": "Your Business Name",
-            "description": "Payment for Order #12345",
-            "image": "https://yourwebsite.com/logo.png", // Optional: Your business logo
-            "order_id": "ORDER_ID_FROM_SERVER", // Replace with actual order ID if using backend
-            "prefill": {
-                "name": billingName,  // Pass the billing name here
-                "email": "johndoe@example.com",
-                "contact": "9999999999"
-            },
-            "theme": {
-                "color": "#3399cc"
-            },
-            "handler": function (response) {
-                alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+        
+        function stopCamera() {
+            const stream = videoElement.srcObject;
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+                videoElement.srcObject = null;
             }
-        };
-
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-    });
-</script>
-
-
+        }
+        
+        function selectShape(option) {
+            shapeOptions.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            appState.selectedShape = option.dataset.shape;
+            confirmShapeBtn.disabled = false;
+        }
+        
+        function startPrinting() {
+            showScreen('printingScreen');
+            
+            // Display all photos in the final container
+            appState.photos.forEach(photoData => {
+                const photo = document.createElement('img');
+                photo.src = photoData;
+                photo.className = 'photo-thumbnail';
+                finalPhotosContainer.appendChild(photo);
+            });
+            
+            // Simulate printing process
+            setTimeout(() => {
+                showScreen('completeScreen');
+            }, 3000);
+        }
+        
+        function resetApp() {
+            // Reset state
+            appState.photos = [];
+            appState.selectedShape = null;
+            appState.photosRemaining = 4;
+            appState.paymentComplete = false;
+            
+            // Clear containers
+            photosContainer.innerHTML = '';
+            finalPhotosContainer.innerHTML = '';
+            
+            // Reset UI
+            photosRemainingEl.textContent = '4';
+            confirmShapeBtn.disabled = true;
+            shapeOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            // Go back to welcome screen
+            showScreen('welcomeScreen');
+        }
+    </script>
 </body>
 </html>
